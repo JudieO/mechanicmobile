@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, ActivityIndicator, Modal } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { users } from '../data';
 
 function Signup({ navigation }) {
 
@@ -17,8 +18,10 @@ function Signup({ navigation }) {
             Alert.alert('Missing Details', 'Please ensure you have provided all required details!')
         } else {
             if (password === cpassword) {
-                RequestSignup()
+                //RequestSignup()
                 setLoadingModalVisible(true)
+                requestSignup()
+                
             } else {
                 Alert.alert('Password mismatch', 'The passwords you have provided do not match!')
             }
@@ -27,18 +30,32 @@ function Signup({ navigation }) {
         }
     }
 
+    const requestSignup = () => {
+        users.push({ 
+            name: name,
+            phone_no: phone_no,
+            email: email,
+            password: password
+        })
+        setTimeout(function(){ 
+            setLoadingModalVisible(false);
+            navigation.navigate('Map')
+        }, 3000);
+        
+    }
+
     const RequestSignup = async () => {
         try {
-            let response = await fetch('https://micah-gas-api.herokuapp.com/signup', {
+            let response = await fetch('https://judy-mechanic-api.herokuapp.com/signup', {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    name: name,
+                    user_name: name,
                     email: email,
-                    phone_no: phone_no,
+                    phone_number: phone_no,
                     password: password
                 })
             });
@@ -81,7 +98,7 @@ function Signup({ navigation }) {
             <View style={styles.signupContainer}>
                 <View style={styles.signupForm}>
                     <TextInput
-                        placeholder='Full name'
+                        placeholder='Username'
                         style={styles.textInputs}
                         value={name}
                         onChangeText={(text) => setName(text)} />

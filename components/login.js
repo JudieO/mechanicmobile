@@ -1,33 +1,55 @@
 import React, { useState } from 'react';
 import { View, Text, Alert, StyleSheet, TextInput, TouchableOpacity, Modal, ActivityIndicator } from 'react-native';
+import { users } from '../data';
 
 function Login({ navigation }) {
 
-    const [phone_no, setPhoneNo] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loadingModalVisible, setLoadingModalVisible] = useState(false);
+    const [authenticated, setAuthenticated] = useState(false);
 
 
     const validateAndLogin = () => {
-        if (phone_no === '' || password === '') {
+        if (email === '' || password === '') {
             Alert.alert('Missing Details', 'Please ensure you have provided the phone number and the password!')
         } else {
-            RequestLogin()
             setLoadingModalVisible(true)
-            // navigation.navigate('Order')
+            requestLogin()
+            
         }
+    }
+
+    const requestLogin = () => {
+        //if details exist
+        users.map((user) => {
+            if (user.email == email && user.password == password){
+                setAuthenticated(true)
+                setTimeout(function(){ 
+                    setLoadingModalVisible(false);
+                    navigation.navigate('Map')
+                }, 3000);
+            }else{
+                Alert.alert('Login failed', 'Invalid email and password combination')
+                setTimeout(function(){ 
+                    setLoadingModalVisible(false);
+                }, 3000);
+            }
+        })
+
+        
     }
 
     const RequestLogin = async () => {
         try {
-            let response = await fetch('https://micah-gas-api.herokuapp.com/login', {
+            let response = await fetch('https://judy-mechanic-api.herokuapp.com/login', {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    phone_no: phone_no,
+                    email: email,
                     password: password
                 })
             });
@@ -38,6 +60,7 @@ function Login({ navigation }) {
             setLoadingModalVisible(false)
 
             return json_response;
+            findNext()
 
         } catch (error) {
             console.error(error);
@@ -46,16 +69,19 @@ function Login({ navigation }) {
     }
 
     const findNextStep = (json_response) => {
-        if (json_response.message === "Successfully logged in") {
+        if (json_response.success) {
 
-
-            navigation.navigate('Order', {
+            navigation.navigate('Map', {
                 user: json_response.name,
-                phone_no: phone_no
+                email: email
             })
         } else {
             Alert.alert('Login failed', 'Invalid phone number and password combination')
         }
+    }
+
+    const findNext = () => {
+        navigation.navigate('Map')
     }
 
 
@@ -68,11 +94,11 @@ function Login({ navigation }) {
                 <View style={styles.signupForm}>
 
                     <TextInput
-                        placeholder='Phone Number'
+                        placeholder='Email'
                         style={styles.textInputs}
-                        value={phone_no}
-                        onChangeText={(text) => setPhoneNo(text)}
-                        keyboardType='numeric' />
+                        value={email}
+                        onChangeText={(text) => setEmail(text)}
+                        keyboardType='default' />
 
                     <TextInput
                         placeholder='Password'

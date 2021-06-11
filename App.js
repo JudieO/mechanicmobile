@@ -5,6 +5,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Order from './components/order';
 import Signup from './components/signup';
 import Login from './components/login';
+import showMap from './components/home';
+import requestMechanic from './components/requestMechanic';
 
 // Remember to add <Order/> later
 
@@ -19,13 +21,16 @@ function App() {
           headerShown: false
         }}
       >
-
         <Stack.Screen
           name="Login"
           component={Login}
         />
         <Stack.Screen name="SignUp" component={Signup} />
+        <Stack.Screen name="Map" component={showMap} />
+        
         <Stack.Screen name="Order" component={Order} />
+        {/* <Stack.Screen name="Map" component={showMap} /> */}
+        <Stack.Screen name="requestMechanic" component={requestMechanic} />
 
       </Stack.Navigator>
     </NavigationContainer>
